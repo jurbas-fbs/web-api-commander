@@ -86,7 +86,7 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
     try {
       SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(null, trustAllCerts, null);
-      SSLConnectionSocketFactory ssf = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(ctx, org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      org.apache.http.conn.ssl.SSLConnectionSocketFactory ssf = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(ctx, org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
       return RegistryBuilder.<ConnectionSocketFactory>create().register("https", ssf).build();
     } catch (Exception ex) {
       ex.printStackTrace();
