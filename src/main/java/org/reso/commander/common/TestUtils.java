@@ -818,7 +818,7 @@ public final class TestUtils {
             + serviceRoot + "\n\tException: " + cex.getMessage(), LOG);
       } catch (Exception ex) {
         failAndExitWithErrorMessage("Could not retrieve valid XML Metadata for given service root: "
-            + serviceRoot + "\n\tException: " + ex, LOG);
+            + serviceRoot + "\n\tException: " + ex + "\n\tCause: " + ex.getCause() + "\n\tMessage: " + ex.getMessage(), LOG);
       }
     }
   }
