@@ -25,6 +25,7 @@ import java.security.cert.X509Certificate;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 
 /**
  * Extends AbstractHttpClientFactory with one that can accept tokens passed in to make requests.
@@ -68,6 +69,7 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public Registry<ConnectionSocketFactory> trusted_registry() {
     TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
       new X509TrustManager() {
@@ -86,7 +88,7 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
     try {
       SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(null, trustAllCerts, null);
-      org.apache.http.conn.ssl.SSLConnectionSocketFactory ssf = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(ctx, org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(ctx, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
       return RegistryBuilder.<ConnectionSocketFactory>create().register("https", ssf).build();
     } catch (Exception ex) {
       ex.printStackTrace();
