@@ -18,6 +18,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+
 /**
  * Extends AbstractHttpClientFactory with one that can accept tokens passed in to make requests.
  */
@@ -41,7 +47,7 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
     List<Header> headers = new ArrayList<>();
     headers.add(authHeader);
 
-    connectionManager = new BasicHttpClientConnectionManager();
+    connectionManager = new BasicHttpClientConnectionManager(trusted_registry());
 
     return HttpClientBuilder.create()
         .setUserAgent(USER_AGENT)
@@ -57,6 +63,32 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
       connectionManager.shutdown();
     } catch (Exception ex) {
       LOG.error(ex.toString());
+    }
+  }
+
+  public Registry<ConnectionSocketFactory> trusted_registry() {
+    javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
+      new javax.net.ssl.X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+        public void checkClientTrusted(
+          java.security.cert.X509Certificate[] certs, String authType) {
+        }
+        public void checkServerTrusted(
+          java.security.cert.X509Certificate[] certs, String authType) {
+        }
+      }
+    };
+
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLS");
+      ctx.init(null, trustAllCerts, null);
+      SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(ctx, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      return RegistryBuilder.<ConnectionSocketFactory>create().register("https", ssf).build();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      return null;
     }
   }
 }
