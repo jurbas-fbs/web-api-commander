@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -67,16 +69,16 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
   }
 
   public Registry<ConnectionSocketFactory> trusted_registry() {
-    javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
-      new javax.net.ssl.X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+    TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
           return null;
         }
         public void checkClientTrusted(
-          java.security.cert.X509Certificate[] certs, String authType) {
+          X509Certificate[] certs, String authType) {
         }
         public void checkServerTrusted(
-          java.security.cert.X509Certificate[] certs, String authType) {
+          X509Certificate[] certs, String authType) {
         }
       }
     };
@@ -84,7 +86,7 @@ public class TokenHttpClientFactory extends AbstractHttpClientFactory {
     try {
       SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(null, trustAllCerts, null);
-      SSLConnectionSocketFactory ssf = new SSLConnectionSocketFactory(ctx, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      SSLConnectionSocketFactory ssf = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(ctx, org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
       return RegistryBuilder.<ConnectionSocketFactory>create().register("https", ssf).build();
     } catch (Exception ex) {
       ex.printStackTrace();
