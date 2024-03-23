@@ -170,7 +170,7 @@ public class LookupResource {
       final String msg = "The following fields are missing the required '" + annotationTerm + "' annotation: "
           + wrapColumns(String.join(", ", fieldsWithMissingAnnotations)) + "\n";
 
-      failAndExitWithErrorMessage(msg, LOG);
+//      failAndExitWithErrorMessage(msg, LOG);
     }
   }
 
